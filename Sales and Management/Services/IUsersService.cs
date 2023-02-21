@@ -18,5 +18,8 @@ namespace Sales_and_Management.Services
 
         //Delete an user
         Task DeleteUserAsync(string id);
+
+        // Login
+        Task<Users> GetUserLogin(string userName, string password);
     }
 }

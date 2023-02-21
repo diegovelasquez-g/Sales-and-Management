@@ -63,5 +63,17 @@ namespace Sales_and_Management.Controllers
             await _iusersService.DeleteUserAsync(id);
             return Ok();
         }
+
+        [HttpGet]
+        [Route("newUser")]
+        public async Task<IActionResult> Get(string userName, string password)
+        {
+            var user = await _iusersService.GetUserLogin(userName, password);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
     }
 }

@@ -17,5 +17,8 @@ namespace Sales_and_Management.Models
 
         [BsonElement]
         public string email { get; set; }
+
+        [BsonElement]
+        public string password { get; set; }
     }
 }

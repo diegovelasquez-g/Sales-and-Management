@@ -34,5 +34,11 @@ namespace Sales_and_Management.Services
         {
             await _usersCollection.DeleteOneAsync(_ => _.Id == id );
         }
+
+        public async Task<Users> GetUserLogin(string userName, string password)
+        {
+            return await _usersCollection.Find(_ => _.userName == userName && _.password == password).FirstOrDefaultAsync();
+        }
+
     }
 }
