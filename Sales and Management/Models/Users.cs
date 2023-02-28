@@ -10,6 +10,7 @@ namespace Sales_and_Management.Models
         public string Id { get; set; }
 
         [BsonElement]
+        [BsonDefaultValue(null)]
         public string name { get; set; }
 
         [BsonElement]

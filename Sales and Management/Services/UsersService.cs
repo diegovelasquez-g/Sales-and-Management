@@ -40,5 +40,16 @@ namespace Sales_and_Management.Services
             return await _usersCollection.Find(_ => _.userName == userName && _.password == password).FirstOrDefaultAsync();
         }
 
+        public async Task<Users> GetValidateUserName(string userName)
+        {
+            return await _usersCollection.Find(_ => _.userName == userName).FirstOrDefaultAsync();
+            
+        }
+
+        public async Task<Users> GetValidateUserEmail(string email)
+        {
+            return await _usersCollection.Find(_ => _.email == email).FirstOrDefaultAsync();
+        }
+
     }
 }

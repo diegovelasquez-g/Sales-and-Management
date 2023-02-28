@@ -21,5 +21,8 @@ namespace Sales_and_Management.Services
 
         // Login
         Task<Users> GetUserLogin(string userName, string password);
+
+        Task<Users> GetValidateUserName(string userName);
+        Task<Users> GetValidateUserEmail(string email);
     }
 }

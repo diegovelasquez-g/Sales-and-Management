@@ -26,7 +26,7 @@ namespace Sales_and_Management.Controllers
         public async Task<IActionResult> Get(string id)
         {
             var user = await _iusersService.GetUserByIdAsync(id);
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -34,8 +34,19 @@ namespace Sales_and_Management.Controllers
         }
 
         [HttpPost]
+        [Route("SignUp")]
         public async Task<IActionResult> Post(Users user)
         {
+            //Validate if the email / username is already used
+            var userNameValidator = await _iusersService.GetValidateUserName(user.userName);
+            var emailValidator = await _iusersService.GetValidateUserEmail(user.email);
+
+            if (userNameValidator != null)
+                return BadRequest("El usuario ya se encuentra en uso.");
+            if (emailValidator != null)
+                return BadRequest("El email ya se encuentra en uso.");
+            if (userNameValidator != null && emailValidator != null)
+                return BadRequest("Las credenciales ya se encuentran en uso.");
             await _iusersService.CreateNewUserAsync(user);
             return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }
@@ -44,7 +55,7 @@ namespace Sales_and_Management.Controllers
         public async Task<IActionResult> Put(Users userToUpdate)
         {
             var user = _iusersService.GetUserByIdAsync(userToUpdate.Id);
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -56,7 +67,7 @@ namespace Sales_and_Management.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var user = await _iusersService.GetUserByIdAsync(id);
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -65,15 +76,16 @@ namespace Sales_and_Management.Controllers
         }
 
         [HttpGet]
-        [Route("newUser")]
+        [Route("SignIn")]
         public async Task<IActionResult> Get(string userName, string password)
         {
             var user = await _iusersService.GetUserLogin(userName, password);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("Credenciales invalidas");
             }
             return Ok(user);
         }
+
     }
 }
