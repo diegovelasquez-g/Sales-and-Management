@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sales_and_Management.Services;
 using Sales_and_Management.Models;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Sales_and_Management.Controllers
 {
@@ -9,9 +13,12 @@ namespace Sales_and_Management.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _iusersService;
-        public UsersController(IUsersService iusersService)
+        private readonly IConfiguration _configuration;
+
+        public UsersController(IUsersService iusersService, IConfiguration configuration)
         {
             _iusersService = iusersService;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -84,7 +91,30 @@ namespace Sales_and_Management.Controllers
             {
                 return NotFound("Credenciales invalidas");
             }
-            return Ok(user);
+            var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                new Claim("id", user.Id),
+                new Claim("user", user.userName)
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
+            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                    jwt.Issuer,
+                    jwt.Audience,
+                    claims,
+                    expires: DateTime.Now.AddMinutes(10),
+                    signingCredentials: signIn
+                );
+            return Ok(new
+            {
+                success = true,
+                message = "Exito",
+                result = new JwtSecurityTokenHandler().WriteToken(token)
+            });
         }
 
     }
