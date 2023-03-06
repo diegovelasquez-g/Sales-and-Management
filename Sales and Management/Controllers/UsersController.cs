@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Sales_and_Management.Controllers
 {
@@ -22,6 +23,7 @@ namespace Sales_and_Management.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Get()
         {
             var users = await _iusersService.GetAllAsync();
@@ -106,7 +108,7 @@ namespace Sales_and_Management.Controllers
                     jwt.Issuer,
                     jwt.Audience,
                     claims,
-                    expires: DateTime.Now.AddMinutes(10),
+                    expires: DateTime.Now.AddMinutes(1),
                     signingCredentials: signIn
                 );
             return Ok(new
